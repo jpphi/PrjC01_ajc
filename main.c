@@ -2,7 +2,8 @@
  * pie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type - f fich.png -o h,l,r,c
  *
  * Ligne de commande pour test:
- * ./pie -p 10,20,30,40,50,100 -l 'cou avec espace',azerty,gsdhlkj,encore,etencore,enfin -f toto.png -o 800,800,400,0x00A0B0C0
+ * ./pie -p 10,20,30,40,50,100 -l 'cou avec espace',azerty,gsdhlkj,encore,etencore,enfin -f toto.png -o 800,800,400,0x80A0B0C0
+ * ./pie -p 10,20,30,40,50,100,50,60 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 40%','Label: 50%','Label: 100%','Label: 50%','Label: 60%' -f toto.png -o 800,800,400,0x80A0B0C0
 */
 
 
@@ -22,7 +23,7 @@ long unsigned int COULEUR_FOND= 0x00FFFFFF;
 
 int taille_police= 10;
 
-long unsigned int COULEURS[]= {0x000000FF, 0x0000FF00, 0x00FF0000, 0x00FFFF00, 0x00FF00FF, 0x0000FFFF, 0x00808080};
+long unsigned int COULEURS[]= {0x000000FF, 0x0000FF00, 0x00FF0000, 0x00FFFF00, 0x00FF00FF, 0x0000FFFF, 0x00808080, 0x00AABBCC};
 
 void afficheAide(void);
 
