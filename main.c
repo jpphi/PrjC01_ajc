@@ -4,6 +4,7 @@
  * Ligne de commande pour test:
  * ./pie -p 10,20,30,40,50,100 -l 'cou avec espace',azerty,gsdhlkj,encore,etencore,enfin -f toto.png -o 800,800,400,0x80A0B0C0
  * ./pie -p 10,20,30,40,50,100,50,60 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 40%','Label: 50%','Label: 100%','Label: 50%','Label: 60%' -f toto.png -o 800,800,400,0x80A0B0C0
+ * ./pie -p 11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,10,9 -l 'Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%' -f toto.png -o 800,800,400,0x80A0B0C0
 */
 
 
@@ -183,7 +184,7 @@ int main(int argc, char **argv)
     {
         double si, co;
         double angle;
-        int posx, posy, offset;
+        int posx, posy, offset, off_y, off_x, off;
 
         gdImageFilledArc (im, LARGEUR/2, HAUTEUR/2, RAYON, RAYON, tmp, tmp+pourcentage[i], COULEURS[i%(longCouleur)], gdPie);
         //printf("\ntmp= %d - tmp + pourcentage[%d]= %lu - i%(longCouleur-1)= %d - i= %d- longCouleur= %d", tmp,i, tmp + pourcentage[i], i%(longCouleur), i, longCouleur);
@@ -200,7 +201,13 @@ int main(int argc, char **argv)
         {
             if( (angle > M_PI/2) && (angle < 3*M_PI/2) )offset= -taille_police * strlen(tabArgL[i]);
             else offset= 0;
-            gdImageString(im, gdFontLarge, posx + offset , posy,tabArgL[i], 0x00000000);
+
+            if( (angle > M_PI/3) && (angle < 4*M_PI/3) )off= (int)(taille_police*si);
+            else if( (angle > 4*M_PI/3) && (angle < 5*M_PI/3) )off= (int)(taille_police * si);
+            else off= 0;
+            off_y= (int)(taille_police * 1.5 * si);
+            off_x= (int)(taille_police * 1.5 * co);
+            gdImageString(im, gdFontLarge, posx + offset + off_x , posy + off_y + off,tabArgL[i], 0x00000000);
             //printf("\n Dans l affichage chaine: %s - offset= %d\n", tabArgL[i], offset);
             //gdImageString(im, gdFontLarge, posx , posy,"tutu", 0x00000000);
         }
