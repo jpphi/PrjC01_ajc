@@ -1,8 +1,8 @@
 /* Ligne de commande:
- * pie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type - f fich.png
+ * pie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type - f fich.png -o h,l,r,c
  *
  * Ligne de commande pour test:
- * ./pie -p 10,20,30,40,50,100 -l 'cou avec espace',azerty,gsdhlkj,encore,etencore,enfin -f toto.png
+ * ./pie -p 10,20,30,40,50,100 -l 'cou avec espace',azerty,gsdhlkj,encore,etencore,enfin -f toto.png -o 800,800,400,0x00A0B0C0
 */
 
 
@@ -18,6 +18,7 @@
 int HAUTEUR = 400;
 int LARGEUR = 400;
 int RAYON= 200;
+long unsigned int COULEUR_FOND= 0x00FFFFFF;
 
 int taille_police= 10;
 
@@ -27,13 +28,11 @@ void afficheAide(void);
 
 int main(int argc, char **argv)
 {
+    char *cP, *cT, *cL, *cF, *cO, *mot,  **tabArgL, *chW;
     int opt;
-    char *cP, *cT, *cL, *cF, *mot,  **tabArgL, *chW;
     int longCouleur= sizeof(COULEURS)/sizeof(long unsigned int), nArgP= 1, nArgL= 1, tailleArgL= 1;
     int *pourcentage= NULL;
-
     gdImagePtr im;
-
     FILE *desc;
 
     if(argc== 1)
@@ -42,55 +41,61 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    while((opt = getopt(argc, argv, "p:t:l:f:")) != -1) // pltf
+    while((opt = getopt(argc, argv, "p:t:l:f:o:")) != -1) // pltf
     {
        switch(opt)
        {
-            case 'p':
-               //printf("option: %c\n", opt);
-               //printf("param: %s\n", optarg);
-               //printf("Longueur: %d\n", strlen(optarg));
-               cP= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-               strcpy(cP, optarg);
-            break;
+        case 'p':
+           //printf("option: %c\n", opt);
+           //printf("param: %s\n", optarg);
+           //printf("Longueur: %d\n", strlen(optarg));
+           cP= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+           strcpy(cP, optarg);
+        break;
 
-            case 't':
-                //printf("option: %c\n", opt);
-                //printf("param: %s\n", optarg);
-                //printf("Longueur: %d\n", strlen(optarg));
-                cT= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-                strcpy(cT, optarg);
-            break;
+        case 't':
+            cT= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+            strcpy(cT, optarg);
+        break;
 
-            case 'l':
-                //printf("option: %c\n", opt);
-                //printf("param: %s\n", optarg);
-                //printf("Longueur: %d\n", strlen(optarg));
-                cL= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-                strcpy(cL, optarg);
-            break;
+        case 'l':
+            cL= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+            strcpy(cL, optarg);
+        break;
 
-            case 'f':
-                //printf("option: %c\n", opt);
-                //printf("param: %s\n", optarg);
-                //printf("Longueur: %d\n", strlen(optarg));
-                cF= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-                strcpy(cF, optarg);
-            break;
+       case 'f':
+           cF= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+           strcpy(cF, optarg);
+       break;
 
-            case ':':
-               printf("option needs a value\n");
-               break;
+       case 'o':
+           cO= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+           strcpy(cO, optarg);
+           //printf("option: %c\n", opt);
+           //printf("param: %s\n", optarg);
+           //printf("Longueur: %d\n", strlen(optarg));
+           sscanf(cO,"%d,%d,%d,%lx", &HAUTEUR, &LARGEUR, &RAYON, &COULEUR_FOND);
+           if(HAUTEUR < 200)HAUTEUR=200;
+           if(LARGEUR < 200)LARGEUR=200;
+           if(RAYON < 200)RAYON=100;
+           //printf("\nH %d L %d R %d C %lx\n", HAUTEUR, LARGEUR, RAYON, COULEUR_FOND);
+           //if(COULEUR_FOND < 200)HAUTEUR=200;
 
-            case '?':
-               printf("\nOption: '%c' inconnue \n", optopt);
-               afficheAide();
-               return 1;
-            break;
+       break;
+
+        case ':':
+           printf("Erreur: Option sans paramètre.\n");
+           break;
+
+        case '?':
+           printf("\nOption: '%c' inconnue \n", optopt);
+           afficheAide();
+           return 1;
+           break;
        }
     }
 
-    printf("\n%s\n%s\n%s\n%s\n", cP,cT,cF, cL);
+    //printf("\n%s\n%s\n%s\n%s\n", cP,cT,cF, cL);
 
     //------------------- Paramètre -f
 
@@ -126,61 +131,50 @@ int main(int argc, char **argv)
     }
     nArgP--;
 
-    /*
-    for(int i= 0; i < nArgP;i++)
-    {
-        printf("\n pourcentage[%d]= %d \n",i, pourcentage[i]);
-    }
-    */
-
-
     //----------------------------------- Paramètre -l
 
     // On va calculer le nombre de mot contenu dans la chaine cL
     if(cL!= NULL)
     {
 
-        chW= malloc(strlen(cL) * sizeof(char));
+        chW= malloc( (strlen(cL)+1) * sizeof(char));
         strcpy(chW, cL); // Il est nécessaire de sauvegarder cL
 
         mot=  strtok(chW, ",");
-        printf("Début mot= %s\n", mot);
+        //printf("Début mot= %s\n", mot);
         while(mot!= NULL)
         {
-            printf("mot= %s - nArgL %d ", mot, nArgL);
+            //printf("mot= %s - nArgL %d ", mot, nArgL);
             //pourcentage= (int *)realloc(pourcentage, nArgL * sizeof(int));
             //sscanf(mot, "%d", &pourcentage[nArgL-1]);
-            printf("< nArgL= %d\n", nArgL);
+            //printf("< nArgL= %d\n", nArgL);
             mot= strtok(NULL,",");
             nArgL++;
         }
         nArgL--;
         tabArgL= (char **)malloc(nArgL * sizeof(char *));
-        printf("-> nArgL %d -> %p\n", nArgL, tabArgL);
+        //printf("-> nArgL %d -> %p\n", nArgL, tabArgL);
 
         // Reservation de l'espace mémoire pour chacun des mots contenu dans cL
         strcpy(chW, cL); // Il est nécessaire de sauvegarder cL
         mot=  strtok(chW, ",");
-        printf("\nRedécomposition= %s\n", mot);
+        //printf("\nRedécomposition= %s\n", mot);
         for(int i= 0; mot!= NULL; i++)
         {
             int tmot= strlen(mot);
-            printf("\nmot= %s - tmot %d ", mot, tmot);
+            //printf("\nmot= %s - tmot %d ", mot, tmot);
             tabArgL[i]= (char *)malloc( (tmot +1) * sizeof(char));
             strcpy(tabArgL[i], mot);
-            printf("< nArgL= %d - *tabArgL %s\n", nArgL, tabArgL[i]);
+            //printf("< nArgL= %d - *tabArgL %s\n", nArgL, tabArgL[i]);
             mot= strtok(NULL,",");
         }
-        printf("-> nArgL %d TabArgL[0]= %s\n", nArgL, tabArgL[0]);
+        //printf("-> nArgL %d TabArgL[0]= %s\n", nArgL, tabArgL[0]);
 
     }
 
-
-
-
     //----------------------------------- Tracer du pie
     im = gdImageCreateTrueColor(LARGEUR, HAUTEUR);
-    gdImageFilledRectangle(im, 0, 0, LARGEUR-1, HAUTEUR-1, 0x00FFFFFF);
+    gdImageFilledRectangle(im, 0, 0, LARGEUR-1, HAUTEUR-1, COULEUR_FOND);
 
     //int pourcentage[]= {10,50,40,25,45};
 
@@ -200,14 +194,13 @@ int main(int argc, char **argv)
         posy= (int)(HAUTEUR/2 + RAYON/2 * si);
 
 
-        printf("\nangle %lf, sinus= %lf, cosinus= %lf, pourcentage= %d, tmp %d, angle cumulé %d M_PI= %lf posx= %d posy= %d\n", angle, si, co, pourcentage[i], tmp, tmp + pourcentage[i], M_PI,
-               posx,posy);
+        //printf("\nangle %lf, sinus= %lf, cosinus= %lf, pourcentage= %d, tmp %d, angle cumulé %d M_PI= %lf posx= %d posy= %d\n", angle, si, co, pourcentage[i], tmp, tmp + pourcentage[i], M_PI, posx,posy);
         if( (cL!= NULL) && ( i < nArgL))
         {
             if( (angle > M_PI/2) && (angle < 3*M_PI/2) )offset= -taille_police * strlen(tabArgL[i]);
             else offset= 0;
             gdImageString(im, gdFontLarge, posx + offset , posy,tabArgL[i], 0x00000000);
-            printf("\n Dans l affichage chaine: %s - offset= %d\n", tabArgL[i], offset);
+            //printf("\n Dans l affichage chaine: %s - offset= %d\n", tabArgL[i], offset);
             //gdImageString(im, gdFontLarge, posx , posy,"tutu", 0x00000000);
         }
 
@@ -232,7 +225,8 @@ int main(int argc, char **argv)
 
 void afficheAide(void)
 {
-    printf("Utilisation:\npie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type -f fich.png\n"
-           "-p indique les pourcentages\n-l labels\n-t type de graphique\n-f Non_du_fichier\n11");
+    printf("Utilisation:\npie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type -f fich.png -o h,l,r,cx\n"
+           "-p indique les pourcentages\n-l labels\n-t type de graphique\n-f Non_du_fichier\n"
+           "-o paramètre d'affichage h hhauteur, l largeur, r rayon c couleur de fond en hexadécimal avec opacité 0x000000FF (pour bleu)");
 
 }
