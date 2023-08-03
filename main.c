@@ -2,11 +2,10 @@
  * pie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type - f fich.png -o h,l,r,c
  *
  * Ligne de commande pour test:
- * ./pie -p 10,20,30,40,50,100 -l 'cou avec espace',azerty,gsdhlkj,encore,etencore,enfin -f toto.png -o 800,800,400,0x80A0B0C0
- * ./pie -p 10,20,30,40,50,100,50,60 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 40%','Label: 50%','Label: 100%','Label: 50%','Label: 60%' -f toto.png -o 800,800,400,0x80A0B0C0
+ * ./pie -p 10,20,30,40,50,100 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 40%','Label: 50%','Label: 100%' -f CamPartiel.png -o 800,800,400,0x80A0B0C0
+ * ./pie -p 10,20,30,40,50,100,50,60 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 40%','Label: 50%','Label: 100%','Label: 50%','Label: 60%' -f toto1.png -o 800,800,400,0x80A0B0C0
  * ./pie -p 11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,10,9 -l 'Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%' -f toto.png -o 800,800,400,0x80A0B0C0
 */
-
 
 #include <stdio.h>
 #include <string.h>
@@ -178,38 +177,53 @@ int main(int argc, char **argv)
     im = gdImageCreateTrueColor(LARGEUR, HAUTEUR);
     gdImageFilledRectangle(im, 0, 0, LARGEUR-1, HAUTEUR-1, COULEUR_FOND);
 
-    //int pourcentage[]= {10,50,40,25,45};
-
     for(int i=0, tmp= 0; i<nArgP; i++)
     {
-        double si, co;
-        double angle;
+        double si, co, angle;
         int posx, posy, offset, off_y, off_x, off;
+        int x0, y0, x1, y1, ltrait= 10;
+        int r= RAYON/2 + 10;
 
         gdImageFilledArc (im, LARGEUR/2, HAUTEUR/2, RAYON, RAYON, tmp, tmp+pourcentage[i], COULEURS[i%(longCouleur)], gdPie);
         //printf("\ntmp= %d - tmp + pourcentage[%d]= %lu - i%(longCouleur-1)= %d - i= %d- longCouleur= %d", tmp,i, tmp + pourcentage[i], i%(longCouleur), i, longCouleur);
 
         angle= (double)(tmp + pourcentage[i]/2)*M_PI/180;
-        si= sin(angle); // ((float)tmp);
-        co= cos(angle); // ((float)tmp);
-        posx= (int)(LARGEUR/2 + RAYON/2 * co);
-        posy= (int)(HAUTEUR/2 + RAYON/2 * si);
 
+        // VARIABLES DE DEBUG
+        //double angleDeg= (tmp + pourcentage[i]/2);
+
+        si= sin(angle);
+        co= cos(angle);
+        posx= (int)(LARGEUR/2 + r * co );
+        posy= (int)(HAUTEUR/2 + r * si );
+
+        x0= (int)(LARGEUR/2 + RAYON/2 * co );
+        y0= (int)(HAUTEUR/2 + RAYON/2 * si );
+        x1= (int)(LARGEUR/2 + (RAYON/2+ltrait) * co );
+        y1= (int)(HAUTEUR/2 + (RAYON/2+ltrait) * si );
+        //printf("\n x0, y0 = %d, %d et x1, y1= %d, %d ltrait= %d -- posx= %d posy=  %d r= %d -- co=  %lf si= %lf \n",x0, y0, x1, y1, ltrait, posx, posy, r, co, si);
+        //printf("VAR DEBUG: angle en degré = %lf\n", angleDeg);
+        gdImageLine(im, x0, y0, x1, y1, 0x00000000);
 
         //printf("\nangle %lf, sinus= %lf, cosinus= %lf, pourcentage= %d, tmp %d, angle cumulé %d M_PI= %lf posx= %d posy= %d\n", angle, si, co, pourcentage[i], tmp, tmp + pourcentage[i], M_PI, posx,posy);
         if( (cL!= NULL) && ( i < nArgL))
         {
-            if( (angle > M_PI/2) && (angle < 3*M_PI/2) )offset= -taille_police * strlen(tabArgL[i]);
-            else offset= 0;
+            if( (angle > M_PI/2) && (angle < 3*M_PI/2) )
+                offset= -taille_police * strlen(tabArgL[i]);
+            else
+                offset= 0;
 
-            if( (angle > M_PI/3) && (angle < 4*M_PI/3) )off= (int)(taille_police*si);
-            else if( (angle > 4*M_PI/3) && (angle < 5*M_PI/3) )off= (int)(taille_police * si);
-            else off= 0;
+            if( (angle > M_PI/3) && (angle < 4*M_PI/3) )
+                off= (int)(taille_police*si);
+            else if( (angle > 4*M_PI/3) && (angle < 5*M_PI/3) )
+                off= (int)(taille_police * si);
+            else
+                off= 0;
             off_y= (int)(taille_police * 1.5 * si);
             off_x= (int)(taille_police * 1.5 * co);
+            //gdImageString(im, gdFontLarge, posx, posy, tabArgL[i], 0x00000000);
             gdImageString(im, gdFontLarge, posx + offset + off_x , posy + off_y + off,tabArgL[i], 0x00000000);
             //printf("\n Dans l affichage chaine: %s - offset= %d\n", tabArgL[i], offset);
-            //gdImageString(im, gdFontLarge, posx , posy,"tutu", 0x00000000);
         }
 
         tmp+= pourcentage[i];
@@ -235,6 +249,6 @@ void afficheAide(void)
 {
     printf("Utilisation:\npie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type -f fich.png -o h,l,r,cx\n"
            "-p indique les pourcentages\n-l labels\n-t type de graphique\n-f Non_du_fichier\n"
-           "-o paramètre d'affichage h hhauteur, l largeur, r rayon c couleur de fond en hexadécimal avec opacité 0x000000FF (pour bleu)");
+           "-o paramètre d'affichage h hhauteur, l largeur, r rayon c couleur de fond en hexadécimal avec opacité 0x000000FF (pour bleu).\n");
 
 }
