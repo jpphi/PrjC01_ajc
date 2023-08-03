@@ -2,9 +2,13 @@
  * pie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type - f fich.png -o h,l,r,c
  *
  * Ligne de commande pour test:
- * ./pie -p 10,20,30,40,50,100 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 40%','Label: 50%','Label: 100%' -f CamPartiel.png -o 800,800,400,0x80A0B0C0
+ * ./pie -p 10,20,15,15,30 -l 'Label: 10%','Label: 20%','Label: 15%','Label: 15%','Label: 30%' -f CamPartiel.png -o 800,800,400,0x80A0B0C0
+ * ./pie -p 5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2, -l 'Label 1: 5 %','Label 1: 3 %','Label 1: 2 %','Label 2: 5 %','Label 2: 3 %','Label 2: 2 %','Label 3: 5 %','Label 3: 3 %','Label 3: 2 %','Label 4: 5 %','Label 4: 3 %','Label 4: 2 %','Label 5: 5 %','Label 5: 3 %','Label 5: 2 %','Label 6: 5 %','Label 6: 3 %','Label 6: 2 %','Label 7: 5 %','Label 7: 3 %','Label 7: 2 %','Label 8: 5 %','Label 8: 3 %','Label 8: 2 %','Label 9: 5 %','Label 9: 3 %','Label 9: 2 %','Label 10: 5 %','Label 10: 3 %','Label 10: 2 %' -f pbArrondi.png -o 800,800,400,0x80A0B0C0 -t c
+ *
+ * ./pie -p 5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2, -l 'Label 1: 5 %','Label 1: 3 %','Label 1: 2 %','Label 2: 5 %','Label 2: 3 %','Label 2: 2 %','Label 3: 5 %','Label 3: 3 %','Label 3: 2 %','Label 4: 5 %','Label 4: 3 %','Label 4: 2 %','Label 5: 5 %','Label 5: 3 %','Label 5: 2 %','Label 6: 5 %','Label 6: 3 %','Label 6: 2 %','Label 7: 5 %','Label 7: 3 %','Label 7: 2 %','Label 8: 5 %','Label 8: 3 %','Label 8: 2 %','Label 9: 5 %','Label 9: 3 %','Label 9: 2 %','Label 10: 5 %','Label 10: 3 %','Label 10: 2 %' -f pbArrondi.png -o 800,800,400,0x80A0B0C0 -t C
+ *
  * ./pie -p 10,20,30,40,50,100,50,60 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 40%','Label: 50%','Label: 100%','Label: 50%','Label: 60%' -f toto1.png -o 800,800,400,0x80A0B0C0
- * ./pie -p 11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,10,9 -l 'Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%','Label: 10%','Label: 9%' -f toto.png -o 800,800,400,0x80A0B0C0
+ * ./pie -p 11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9 -l 'Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9' -f toto.png -o 800,800,400,0x80A0B0C0 -t C
 */
 
 #include <stdio.h>
@@ -18,7 +22,7 @@
 
 int HAUTEUR = 400;
 int LARGEUR = 400;
-int RAYON= 200;
+int DIMENSION= 200;
 long unsigned int COULEUR_FOND= 0x00FFFFFF;
 
 int taille_police= 10;
@@ -29,7 +33,8 @@ void afficheAide(void);
 
 int main(int argc, char **argv)
 {
-    char *cP, *cT, *cL, *cF, *cO, *mot,  **tabArgL, *chW;
+    char *cP, *cL, *cF, *cO, *mot,  **tabArgL, *chW; //*cT,
+    char typeGraphique= 'c'; // Type de grapphiqque par défaut
     int opt;
     int longCouleur= sizeof(COULEURS)/sizeof(long unsigned int), nArgP= 1, nArgL= 1, tailleArgL= 1;
     int *pourcentage= NULL;
@@ -54,14 +59,18 @@ int main(int argc, char **argv)
            strcpy(cP, optarg);
         break;
 
-        case 't':
-            cT= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-            strcpy(cT, optarg);
+        case 't': // De la forme t x avec x= c pour un camembert, h pour un histo, b pour un bar chart
+           printf("option: %c\n", opt);
+           printf("param: %s\n", optarg);
+           printf("Longueur: %d\n", strlen(optarg));
+           //cT= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+           //strcpy(cT, optarg);
+           typeGraphique= optarg[0];
         break;
 
         case 'l':
-            cL= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-            strcpy(cL, optarg);
+           cL= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+           strcpy(cL, optarg);
         break;
 
        case 'f':
@@ -75,11 +84,11 @@ int main(int argc, char **argv)
            //printf("option: %c\n", opt);
            //printf("param: %s\n", optarg);
            //printf("Longueur: %d\n", strlen(optarg));
-           sscanf(cO,"%d,%d,%d,%lx", &HAUTEUR, &LARGEUR, &RAYON, &COULEUR_FOND);
+           sscanf(cO,"%d,%d,%d,%lx", &HAUTEUR, &LARGEUR, &DIMENSION, &COULEUR_FOND);
            if(HAUTEUR < 200)HAUTEUR=200;
            if(LARGEUR < 200)LARGEUR=200;
-           if(RAYON < 200)RAYON=100;
-           //printf("\nH %d L %d R %d C %lx\n", HAUTEUR, LARGEUR, RAYON, COULEUR_FOND);
+           if(DIMENSION < 200)DIMENSION=100;
+           //printf("\nH %d L %d R %d C %lx\n", HAUTEUR, LARGEUR, DIMENSION, COULEUR_FOND);
            //if(COULEUR_FOND < 200)HAUTEUR=200;
 
        break;
@@ -123,10 +132,29 @@ int main(int argc, char **argv)
     //printf("Début mot= %s\n", mot);
     while(mot!= NULL)
     {
+        double pp100;
         //printf("mot= %s", mot);
         pourcentage= (int *)realloc(pourcentage, nArgP * sizeof(int));
-        sscanf(mot, "%d", &pourcentage[nArgP-1]);
-        //printf("< nArgP= %d\n", nArgP);
+        sscanf(mot, "%lf", &pp100);
+        switch (typeGraphique)
+        {
+            case 'c':
+                pourcentage[nArgP-1]= (int)(pp100*3.6);
+                break;
+            case 'C':
+                pourcentage[nArgP-1]= (int)(pp100);
+                break;
+            case 'b':
+            case 'B':
+                break;
+            case 'h':
+            case 'H':
+                break;
+            default:
+                break;
+        }
+        //sscanf(mot, "%lf", );
+        printf("< nArgP= %d -- pourcentage[%d]= %d\n", nArgP, nArgP-1, pourcentage[nArgP-1]);
         mot= strtok(NULL,",");
         nArgP++;
     }
@@ -182,9 +210,9 @@ int main(int argc, char **argv)
         double si, co, angle;
         int posx, posy, offset, off_y, off_x, off;
         int x0, y0, x1, y1, ltrait= 10;
-        int r= RAYON/2 + 10;
+        int r= DIMENSION/2 + 10;
 
-        gdImageFilledArc (im, LARGEUR/2, HAUTEUR/2, RAYON, RAYON, tmp, tmp+pourcentage[i], COULEURS[i%(longCouleur)], gdPie);
+        gdImageFilledArc (im, LARGEUR/2, HAUTEUR/2, DIMENSION, DIMENSION, tmp, tmp+pourcentage[i], COULEURS[i%(longCouleur)], gdPie);
         //printf("\ntmp= %d - tmp + pourcentage[%d]= %lu - i%(longCouleur-1)= %d - i= %d- longCouleur= %d", tmp,i, tmp + pourcentage[i], i%(longCouleur), i, longCouleur);
 
         angle= (double)(tmp + pourcentage[i]/2)*M_PI/180;
@@ -197,10 +225,10 @@ int main(int argc, char **argv)
         posx= (int)(LARGEUR/2 + r * co );
         posy= (int)(HAUTEUR/2 + r * si );
 
-        x0= (int)(LARGEUR/2 + RAYON/2 * co );
-        y0= (int)(HAUTEUR/2 + RAYON/2 * si );
-        x1= (int)(LARGEUR/2 + (RAYON/2+ltrait) * co );
-        y1= (int)(HAUTEUR/2 + (RAYON/2+ltrait) * si );
+        x0= (int)(LARGEUR/2 + DIMENSION/2 * co );
+        y0= (int)(HAUTEUR/2 + DIMENSION/2 * si );
+        x1= (int)(LARGEUR/2 + (DIMENSION/2+ltrait) * co );
+        y1= (int)(HAUTEUR/2 + (DIMENSION/2+ltrait) * si );
         //printf("\n x0, y0 = %d, %d et x1, y1= %d, %d ltrait= %d -- posx= %d posy=  %d r= %d -- co=  %lf si= %lf \n",x0, y0, x1, y1, ltrait, posx, posy, r, co, si);
         //printf("VAR DEBUG: angle en degré = %lf\n", angleDeg);
         gdImageLine(im, x0, y0, x1, y1, 0x00000000);
@@ -248,7 +276,7 @@ int main(int argc, char **argv)
 void afficheAide(void)
 {
     printf("Utilisation:\npie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type -f fich.png -o h,l,r,cx\n"
-           "-p indique les pourcentages\n-l labels\n-t type de graphique\n-f Non_du_fichier\n"
-           "-o paramètre d'affichage h hhauteur, l largeur, r rayon c couleur de fond en hexadécimal avec opacité 0x000000FF (pour bleu).\n");
+           "-p indique les pourcentages\n-l labels\n-t type de graphique type= c pour un camembert, h pour un histo, b pour un bar chart\n-f Non_du_fichier\n"
+           "-o paramètre d'affichage h hauteur, l largeur, r dimension (rayon pour un pie chart) cx couleur de fond en hexadécimal avec opacité 0x000000FF (pour bleu).\n");
 
 }
