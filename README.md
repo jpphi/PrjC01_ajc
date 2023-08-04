@@ -10,6 +10,9 @@ Ce programme permet de dessiner des camemberts proportionnels aux pourcentages p
 - -t ce paramètre optionel permet de définir le type de graphique (-t type de graphique type= c/C pour un camembert, h/H pour un histogramme, b/B pour un bar chart). Si le paramètre est en minuscule, les données sont considérées comme un pourcentage, sinon les données sont des données absolues. **b et h sont en cours d'intégration**.  
 - -o ce paramètre optionel permet de définir la hauteur et la largeur de l'image ainsi que le rayon du cercle et la couleur de fond.  
   
+La valeur par défaut du paramètre -t est 'C'.  
+Les valeurs par défauts du paramètre -o sont 400, 400, 200, 0x00FFFFFF (Couleur blanche).  
+  
 ## Remarques  
 Les paramètres doivent être cohérents.  
 Les différentes valeurs doivent être séparées par des virgules et sans espace.  
@@ -33,4 +36,11 @@ Cette image fera 800 pixels de haut et de large. Le camembert aura un diamètre 
   
 ## Valeur retournée  
 1 en cas d'erreur, 0 si succès.  
+  
+## Ligne de commande pour test  
+Paramètre nul dans une liste: Pas de plantage et l'ordre des valeurs passées est conforme à ce qui est attendu (la double virgule est filtrée).  
+./pie -f toto.png -p 10,,30,50 -l lab1,,lab3,lab4  
+A noter que le ',,' à un comportement différent du '0' qui créera une portion de camembert d'une taille de 0.  
+./pie -f toto.png -p 10,,30,50 -l lab1,lab2,,lab4 -t c  
+
 
