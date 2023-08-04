@@ -7,7 +7,7 @@ Ce programme permet de dessiner des camemberts proportionnels aux pourcentages p
 - -p ce paramètre obligatoire permet de définir les pourcentages passés.  
 - -l ce paramètre optionel permet de passer les étiquettes associées aux pourcentages.  
 - -f ce paramètre obligatoire indique le nom du fichier png dans lequel l'image sera sauvegardée.  
-- -t ce paramètre optionel permet de définir le type de graphique (-t type de graphique type= c/C pour un camembert, h/H pour un histogramme, b/B pour un bar chart). Si le paramètre est en minuscule, les données sont considérées comme un pourcentage, sinon les données sont des données absolues. **b et h sont en cours d'intégration**.  
+- -t ce paramètre optionel permet de définir le type de graphique (-t type de graphique type= c/C pour un camembert, h/H pour un histogramme, b/B pour un bar chart). Si le paramètre est en minuscule, les données sont considérées comme un pourcentage, sinon les données sont des données absolues. **h est en cours d'intégration**.  
 - -o ce paramètre optionel permet de définir la hauteur et la largeur de l'image ainsi que le rayon du cercle et la couleur de fond.  
 - -c ce paramètre optionel permetde définir la taille de la police. Valeur possible 0, 1, 2, 3 et 4.  
   
@@ -29,6 +29,10 @@ Utilisation en valeur absolue:
   
 Crée un fichier toto.png contenant une image d'un graphique de type camenmbert. les pourcentages et les labels sont indiqués dans les paramètres p et l.  
 Cette image fera 800 pixels de haut et de large. Le camembert aura un diamètre de 400. La couleur de fond est défnie par 0x80A0B0C0.  
+  
+Bar chart relatif et absolue;  
+**./pie -p 70,20,30,40,50,100,50,60 -l 'Label: 70','Label: 20','Label: 30','Label: 40','Label: 50','Label: 100','Label: 50','Label: 60' -f barChartB.png -o 800,800,400,0x80A0B0C0 -t B**  
+**./pie -p 10,20,30,25,15 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 25%','Label: 15%' -f barChartb.png -o 800,800,400,0x80A0B0C0 -t b**  
   
 ## Problèmes et améliorations  
 - La ligne de commande n'est pas vérifiée ni filtrée. Attention de ne pas entrer n'importe quoi ! :)  

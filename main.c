@@ -7,6 +7,10 @@
  * ./pie -p 5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2, -l 'Label 1: 5 %','Label 1: 3 %','Label 1: 2 %','Label 2: 5 %','Label 2: 3 %','Label 2: 2 %','Label 3: 5 %','Label 3: 3 %','Label 3: 2 %','Label 4: 5 %','Label 4: 3 %','Label 4: 2 %','Label 5: 5 %','Label 5: 3 %','Label 5: 2 %','Label 6: 5 %','Label 6: 3 %','Label 6: 2 %','Label 7: 5 %','Label 7: 3 %','Label 7: 2 %','Label 8: 5 %','Label 8: 3 %','Label 8: 2 %','Label 9: 5 %','Label 9: 3 %','Label 9: 2 %','Label 10: 5 %','Label 10: 3 %','Label 10: 2 %' -f pbArrondi.png -o 800,800,400,0x80A0B0C0 -t c
  * Option C
  * ./pie -p 11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9 -l 'Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9' -f Cam36C.png -o 800,800,400,0x80A0B0C0 -t C
+ * Option B
+ * ./pie -p 70,20,30,40,50,100,50,60 -l 'Label: 70','Label: 20','Label: 30','Label: 40','Label: 50','Label: 100','Label: 50','Label: 60' -f barChartB.png -o 800,800,400,0x80A0B0C0 -t B
+ * Option b
+ * ./pie -p 10,20,30,25,15 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 25%','Label: 15%' -f barChartb.png -o 800,800,400,0x80A0B0C0 -t b
  *
  * ./pie -p 10,20,30,40,50,100,50,60 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 40%','Label: 50%','Label: 100%','Label: 50%','Label: 60%' -f toto1.png -o 800,800,400,0x80A0B0C0
  *
@@ -44,7 +48,7 @@ int main(int argc, char **argv)
     char *cP, *cL, *cF, *cO, *mot,  **tabArgL, *chW; //*cT,
     char typeGraphique= 'C'; // Type de graphique par défaut
     int opt, numPolice= 3;
-    int longCouleur= sizeof(COULEURS)/sizeof(long unsigned int), nArgP= 1, nArgL= 1, tailleArgL= 1;
+    int longCouleur= sizeof(COULEURS)/sizeof(long unsigned int), nArgP= 1, nArgL= 1;
     int *pourcentage= NULL;
     FILE *desc;
     gdImagePtr im;
@@ -171,12 +175,14 @@ int main(int argc, char **argv)
         {
             case 'c':
                 pourcentage[nArgP-1]= (int)(pp100*3.6);
-                break;
+            break;
             case 'C':
                 pourcentage[nArgP-1]= (int)(pp100);
-                break;
+            break;
+
             case 'b':
             case 'B':
+                pourcentage[nArgP-1]= (int)(pp100);
                 break;
             case 'h':
             case 'H':
@@ -305,25 +311,60 @@ int main(int argc, char **argv)
                     off_y+= off_y_s2;
                 }
 
-                /*
-                if( (angle > M_PI/3) && (angle < 4*M_PI/3) )
-                    off= (int)((polices[numPolice]->w)*si);
-                else if( (angle > 4*M_PI/3) && (angle < 5*M_PI/3) )
-                    off= (int)((polices[numPolice]->w) * si);
-                else
-                    off= 0;
-                */
-                //off_x= 0; //(int)((polices[numPolice]->w) * 1.5 * co);
-                //gdImageString(im, polices[numPolice], posx, posy, tabArgL[i], 0x00000000);
                 gdImageString(im, polices[numPolice], posx + offset, posy + off_y,tabArgL[i], 0x00000000);
                 //printf("\n Dans l affichage chaine: %s - offset= %d\n", tabArgL[i], offset);
             }
 
             tmp+= pourcentage[i];
+        }
+    }
 
+    //----------------------------------- Tracer du bar chart
+
+    if( (typeGraphique== 'b') || (typeGraphique== 'B') )
+    {
+        int delta= 4*polices[numPolice]->w;
+
+        if(typeGraphique== 'b')
+        {
+            for(int j= 0; j < nArgP ;j++)
+            {
+                pourcentage[j]= (int)( (double)pourcentage[j]*(HAUTEUR - 2*delta)/100);
+                printf("\nrecalcul du pourcentage= %d\n", pourcentage[j]);
+            }
         }
 
+        for(int i=0, tmp= HAUTEUR - delta; i<nArgP; i++)
+        {
+            int base;
+
+            base= tmp - pourcentage[i] ;
+
+            // Tracer une part
+            gdImageFilledRectangle(im, LARGEUR/2 - DIMENSION/2, tmp ,LARGEUR/2 + DIMENSION/2, base, COULEURS[i%(longCouleur)]);
+
+            //----------------------------------- Ecriture d'un label associé s'il existe
+
+            if( (cL!= NULL) && ( i < nArgL))
+            {
+                int posx, posy;
+
+                posx= LARGEUR/2 + DIMENSION/2 + polices[numPolice]->w;
+                posy= base + pourcentage[i] / 2;
+
+                gdImageString(im, polices[numPolice], posx, posy, tabArgL[i], 0x00000000);
+            }
+
+            tmp-= pourcentage[i];
+        }
     }
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //
+    //                                          SAUVEGARDE DU GRAPHIQUE
+    //
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
     if (!desc) {
         fprintf(stderr, "Erreur de création du fichier.\n");
@@ -342,8 +383,8 @@ int main(int argc, char **argv)
 void afficheAide(void)
 {
     printf("Utilisation:\npie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type -f fich.png -o h,l,r,cx -c x\n"
-           "-p indique les pourcentages\n-l labels\n-t type de graphique type= c pour un camembert, h pour un histo, b pour un bar chart\n-f Non_du_fichier\n"
+           "-p indique les pourcentages\n-l labels\n-t type de graphique type= c ou C pour un camembert, h ou H pour un histo, b ou B pour un bar chart."
+           " En minuscule les valeurs seront interprétées comme des %, en majuscule les valeurs sont des valeurs absoles.\n-f Non_du_fichier\n"
            "-o paramètre d'affichage h hauteur, l largeur, r dimension (rayon pour un pie chart) cx couleur de fond en hexadécimal avec opacité 0x000000FF (pour bleu).\n"
-           "- c paramètre définissant la taille de la police du texte affiché. Valeur possible: 0 (tiny), 1 (small), 2 (medium bold), 3 (large) et 4 (Giant).\n");
-
+           "-c paramètre définissant la taille de la police du texte affiché. Valeur possible: 0 (tiny), 1 (small), 2 (medium bold), 3 (large) et 4 (Giant).\n");
 }
