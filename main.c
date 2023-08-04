@@ -1,5 +1,5 @@
 /* Ligne de commande:
- * pie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type - f fich.png -o h,l,r,c
+ * pie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type - f fich.png -o h,l,r,c -c x
  *
  * Ligne de commande pour test:
  * ./pie -p 10,20,15,15,30 -l 'Label: 10%','Label: 20%','Label: 15%','Label: 15%','Label: 30%' -f CamPartiel.png -o 800,800,400,0x80A0B0C0
@@ -27,6 +27,7 @@
 #include <math.h>
 
 //#define DEBUG 0
+#define NBPOLICE 5
 
 int HAUTEUR = 400;
 int LARGEUR = 400;
@@ -47,7 +48,7 @@ int main(int argc, char **argv)
     int *pourcentage= NULL;
     FILE *desc;
     gdImagePtr im;
-    gdFontPtr polices[5]; // Plus facile si on souhaite passé le type de police= gdFontLarge;
+    gdFontPtr polices[NBPOLICE]; // Plus facile si on souhaite passé le type de police= gdFontLarge;
 
     polices[0]= gdFontTiny;
     polices[1]= gdFontSmall;
@@ -67,50 +68,55 @@ int main(int argc, char **argv)
     //
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    while((opt = getopt(argc, argv, "p:t:l:f:o:")) != -1) // pltf
+    while((opt = getopt(argc, argv, "c:f:l:o:p:t:")) != -1) // pltf
     {
-       switch(opt)
-       {
-        case 'p':
-           //printf("option: %c\n", opt);
-           //printf("param: %s\n", optarg);
-           //printf("Longueur: %d\n", strlen(optarg));
-           cP= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-           strcpy(cP, optarg);
-        break;
-
-        case 't': // De la forme t x avec x= c pour un camembert, h pour un histo, b pour un bar chart
-           //printf("option: %c\n", opt);
-           //printf("param: %s\n", optarg);
-           //printf("Longueur: %d\n", strlen(optarg));
-           //cT= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-           //strcpy(cT, optarg);
-           typeGraphique= optarg[0];
+        switch(opt)
+        {
+        case 'c':
+            numPolice= (optarg[0]-48) % NBPOLICE;
+            //printf("optarg %s, opttarg[0] %d, numPolice= %d\n",optarg, optarg[0], numPolice);
+            break;
+        case 'f':
+            cF= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+            strcpy(cF, optarg);
         break;
 
         case 'l':
-           cL= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-           strcpy(cL, optarg);
+            cL= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+            strcpy(cL, optarg);
         break;
 
-       case 'f':
-           cF= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-           strcpy(cF, optarg);
-       break;
 
-       case 'o':
-           cO= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-           strcpy(cO, optarg);
-           //printf("option: %c\n", opt);
-           //printf("param: %s\n", optarg);
-           //printf("Longueur: %d\n", strlen(optarg));
-           sscanf(cO,"%d,%d,%d,%lx", &HAUTEUR, &LARGEUR, &DIMENSION, &COULEUR_FOND);
-           if(HAUTEUR < 200)HAUTEUR=200;
-           if(LARGEUR < 200)LARGEUR=200;
-           //if(DIMENSION < 200)DIMENSION=100;
-           //printf("\nH %d L %d R %d C %lx\n", HAUTEUR, LARGEUR, DIMENSION, COULEUR_FOND);
-           //if(COULEUR_FOND < 200)HAUTEUR=200;
-       break;
+        case 'o':
+            cO= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+            strcpy(cO, optarg);
+            //printf("option: %c\n", opt);
+            //printf("param: %s\n", optarg);
+            //printf("Longueur: %d\n", strlen(optarg));
+            sscanf(cO,"%d,%d,%d,%lx", &HAUTEUR, &LARGEUR, &DIMENSION, &COULEUR_FOND);
+            if(HAUTEUR < 200)HAUTEUR=200;
+            if(LARGEUR < 200)LARGEUR=200;
+            //if(DIMENSION < 200)DIMENSION=100;
+            //printf("\nH %d L %d R %d C %lx\n", HAUTEUR, LARGEUR, DIMENSION, COULEUR_FOND);
+            //if(COULEUR_FOND < 200)HAUTEUR=200;
+        break;
+
+        case 'p':
+            //printf("option: %c\n", opt);
+            //printf("param: %s\n", optarg);
+            //printf("Longueur: %d\n", strlen(optarg));
+            cP= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+            strcpy(cP, optarg);
+        break;
+
+        case 't': // De la forme t x avec x= c pour un camembert, h pour un histo, b pour un bar chart
+            //printf("option: %c\n", opt);
+            //printf("param: %s\n", optarg);
+            //printf("Longueur: %d\n", strlen(optarg));
+            //cT= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
+            //strcpy(cT, optarg);
+            typeGraphique= optarg[0];
+        break;
 
         case ':':
            printf("Erreur: Option sans paramètre.\n");
@@ -121,7 +127,7 @@ int main(int argc, char **argv)
            afficheAide();
            return 1;
            break;
-       }
+        }
     }
 
     //printf("\n%s\n%s\n%s\n%s\n", cP,cT,cF, cL);
@@ -308,8 +314,8 @@ int main(int argc, char **argv)
                     off= 0;
                 */
                 //off_x= 0; //(int)((polices[numPolice]->w) * 1.5 * co);
-                //gdImageString(im, gdFontLarge, posx, posy, tabArgL[i], 0x00000000);
-                gdImageString(im, gdFontLarge, posx + offset, posy + off_y,tabArgL[i], 0x00000000);
+                //gdImageString(im, polices[numPolice], posx, posy, tabArgL[i], 0x00000000);
+                gdImageString(im, polices[numPolice], posx + offset, posy + off_y,tabArgL[i], 0x00000000);
                 //printf("\n Dans l affichage chaine: %s - offset= %d\n", tabArgL[i], offset);
             }
 
@@ -335,8 +341,9 @@ int main(int argc, char **argv)
 
 void afficheAide(void)
 {
-    printf("Utilisation:\npie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type -f fich.png -o h,l,r,cx\n"
+    printf("Utilisation:\npie -p n1,n2,n3,...,nx -l ch1, ch2,...,chx -t type -f fich.png -o h,l,r,cx -c x\n"
            "-p indique les pourcentages\n-l labels\n-t type de graphique type= c pour un camembert, h pour un histo, b pour un bar chart\n-f Non_du_fichier\n"
-           "-o paramètre d'affichage h hauteur, l largeur, r dimension (rayon pour un pie chart) cx couleur de fond en hexadécimal avec opacité 0x000000FF (pour bleu).\n");
+           "-o paramètre d'affichage h hauteur, l largeur, r dimension (rayon pour un pie chart) cx couleur de fond en hexadécimal avec opacité 0x000000FF (pour bleu).\n"
+           "- c paramètre définissant la taille de la police du texte affiché. Valeur possible: 0 (tiny), 1 (small), 2 (medium bold), 3 (large) et 4 (Giant).\n");
 
 }

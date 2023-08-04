@@ -9,8 +9,10 @@ Ce programme permet de dessiner des camemberts proportionnels aux pourcentages p
 - -f ce paramètre obligatoire indique le nom du fichier png dans lequel l'image sera sauvegardée.  
 - -t ce paramètre optionel permet de définir le type de graphique (-t type de graphique type= c/C pour un camembert, h/H pour un histogramme, b/B pour un bar chart). Si le paramètre est en minuscule, les données sont considérées comme un pourcentage, sinon les données sont des données absolues. **b et h sont en cours d'intégration**.  
 - -o ce paramètre optionel permet de définir la hauteur et la largeur de l'image ainsi que le rayon du cercle et la couleur de fond.  
+- -c ce paramètre optionel permetde définir la taille de la police. Valeur possible 0, 1, 2, 3 et 4.  
   
 La valeur par défaut du paramètre -t est 'C'.  
+La valeur par défaut du paramètre -c est 3.  
 Les valeurs par défauts du paramètre -o sont 400, 400, 200, 0x00FFFFFF (Couleur blanche).  
   
 ## Remarques  
