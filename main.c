@@ -42,8 +42,8 @@ int main(int argc, char **argv)
 
     int longCouleur= sizeof(COULEURS)/sizeof(long unsigned int), nArgP= 1, nArgL= 1;
     int *pourcentage= NULL;
-    int hauteur = 400, largeur, dimension_graph= 200;
-    int opt, numPolice= 3;
+    int hauteur = 400, largeur, dimension_graph= 200, epaisseur;
+    int opt, numPolice= 3, d3= 0;
 
     FILE *desc;
 
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
     //
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    while((opt = getopt(argc, argv, "c:f:l:o:p:t:")) != -1) // pltf
+    while((opt = getopt(argc, argv, "c:df:l:o:p:t:")) != -1) // pltf
     {
         switch(opt)
         {
@@ -77,7 +77,12 @@ int main(int argc, char **argv)
             //printf("param: %s\n", optarg);
             //printf("Longueur: %d\n", strlen(optarg));
             numPolice= (optarg[0]-48) % NBPOLICE;
-            break;
+        break;
+
+        case 'd':
+            d3= 1;
+        break;
+
         case 'f':
             cF= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
             strcpy(cF, optarg);
@@ -233,14 +238,14 @@ int main(int argc, char **argv)
 
     //----------------------------------- Tracer du pie
 
-    if( (typeGraphique== 'c') || (typeGraphique== 'C') )
+    if( ( (typeGraphique== 'c') || (typeGraphique== 'C') ) && !d3)
     {
+        double si, co, angle;
+        int x0, y0, x1, y1, ltrait= 10;
+        int r= dimension_graph/2 + 10;
+
         for(int i=0, tmp= 0; i<nArgP; i++)
         {
-            double si, co, angle;
-            int x0, y0, x1, y1, ltrait= 10;
-            int r= dimension_graph/2 + 10;
-
             //----------------------------------- Tracer d'une portion de camembert
 
             gdImageFilledArc (im, largeur/2, hauteur/2, dimension_graph, dimension_graph, tmp, tmp+pourcentage[i], COULEURS[i%(longCouleur)], gdPie);
@@ -359,6 +364,45 @@ int main(int argc, char **argv)
 
     }
 
+    if( ( (typeGraphique== 'c') || (typeGraphique== 'C') ) && d3)
+    {
+        double si, co, angle;
+        int x0, y0, x1, y1, ltrait= 10;
+        int r= dimension_graph/2 + 10;
+        int epaisseur= hauteur/12;
+        unsigned int couleur;
+
+        //----------------------------------- Tracer les contours extérieur des camemberts qui sont entre 0  et 180°
+        for(int i=0, tmp= 0; i<nArgP && tmp < 180; i++)
+        {
+            couleur= COULEURS[i%(longCouleur)];
+            int tmp2;
+
+            tmp2=(tmp+pourcentage[i]>180)?180:tmp+pourcentage[i];
+            //tmp2= tmp+pourcentage[i];
+            for(int i= 1; i< epaisseur; i++)
+            {
+                gdImageArc (im, largeur/2, hauteur/2 + i, dimension_graph, dimension_graph/2, tmp, tmp2, couleur);
+            }
+            tmp+= pourcentage[i];
+        }
+
+        //----------------------------------- Tracer les camemberts
+        for(int i=0, tmp= 0; i<nArgP; i++)
+        {
+            gdImageFilledArc (im, largeur/2, hauteur/2, dimension_graph, dimension_graph/2, tmp, tmp+pourcentage[i], COULEURS[i%(longCouleur)], gdEdged | gdArc);
+
+            tmp+= pourcentage[i];
+
+        }
+
+        // Traçage des bords
+        gdImageArc(im, largeur/2, hauteur/2, dimension_graph, dimension_graph/2, 0, 360, 0);
+        gdImageArc(im, largeur/2, hauteur/2 + epaisseur, dimension_graph, dimension_graph/2, 0, 180, 0);
+        gdImageLine(im, largeur/2 - dimension_graph/2, hauteur/2, largeur/2 - dimension_graph/2, hauteur/2 + epaisseur, 0x00000000);
+        gdImageLine(im, largeur/2 + dimension_graph/2, hauteur/2, largeur/2 + dimension_graph/2, hauteur/2 + epaisseur, 0x00000000);
+    }
+
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
     //
     //                                          SAUVEGARDE DU GRAPHIQUE
@@ -366,7 +410,8 @@ int main(int argc, char **argv)
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    if (!desc) {
+    if (!desc)
+    {
         fprintf(stderr, "Erreur de création du fichier.\n");
         gdImageDestroy(im);
         return 1;

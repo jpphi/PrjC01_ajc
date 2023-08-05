@@ -1,12 +1,12 @@
 # PrjC01_ajc
-Projet AJC - Utilisation de gdlib  
+Projet AJC - Utilisation de gdlib (https://libgd.github.io/)  
   
 ## Fonctionnement du programme  
-Ce programme permet de dessiner des camemberts proportionnels aux pourcentages passé en paramètre.  
+Ce programme permet de dessiner des camemberts proportionnels aux pourcentages passé en paramètre ou considère les valeurs passées comme étant des valeurs absolues.  
 - Sans arguement, le programme affiche l'aide.  
-- -p ce paramètre obligatoire permet de définir les pourcentages passés.  
+- -p ce **paramètre obligatoire** permet de définir les pourcentages passés.  
 - -l ce paramètre optionel permet de passer les étiquettes associées aux pourcentages.  
-- -f ce paramètre obligatoire indique le nom du fichier png dans lequel l'image sera sauvegardée.  
+- -f ce **paramètre obligatoire** indique le nom du fichier png dans lequel l'image sera sauvegardée.  
 - -t ce paramètre optionel permet de définir le type de graphique (-t type de graphique type= c/C pour un camembert, h/H pour un histogramme, b/B pour un bar chart). Si le paramètre est en minuscule, les données sont considérées comme un pourcentage, sinon les données sont des données absolues. **h est en cours d'intégration**.  
 - -o ce paramètre optionel permet de définir la hauteur et la largeur de l'image ainsi que le rayon du cercle et la couleur de fond.  
 - -c ce paramètre optionel permetde définir la taille de la police. Valeur possible 0, 1, 2, 3 et 4.  
@@ -39,6 +39,7 @@ Bar chart relatif et absolue;
 - Une version incluant les histogrammes est prévue.  
 - Une version permettant de faire des graphiques 3D.  
 - Des erreurs d'arrondies peuvent dégradées l'image d'un camembert (voir le png pbArrondi).  
+- Si le nombre de camembert à afficher correspond aux nombre de couleurs disponible + 1, le dernier camembert aura la même couleur que le 1er.  
   
 ## Valeur retournée  
 1 en cas d'erreur, 0 si succès.  
