@@ -173,14 +173,13 @@ int main(int argc, char **argv)
             break;
 
             case 'b':
-            case 'B':
-                pourcentage[nArgP-1]= (int)(pp100);
-                break;
             case 'h':
+            case 'B':
             case 'H':
-                break;
+                pourcentage[nArgP-1]= (int)(pp100);
+            break;
             default:
-                break;
+            break;
         }
         //printf("< nArgP= %d -- pourcentage[%d]= %d\n", nArgP, nArgP-1, pourcentage[nArgP-1]);
         mot= strtok(NULL,",");
@@ -231,11 +230,12 @@ int main(int argc, char **argv)
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
     //
-    //                                          TRACE DES DIFFERENTES FIGURES
+    //                                          TRACE DES DIFFERENTES FIGURES 2D
     //
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    // Création de l'image de taille donée en paramètre
+    //----------------------------------- Création de l'image de taille donée en paramètre
+
     im = gdImageCreateTrueColor(largeur, hauteur);
     gdImageFilledRectangle(im, 0, 0, largeur-1, hauteur-1, COULEUR_FOND);
 
@@ -320,7 +320,7 @@ int main(int argc, char **argv)
 
     //----------------------------------- Tracer du bar chart
 
-    if( (typeGraphique== 'b') || (typeGraphique== 'B') )
+    if( ( (typeGraphique== 'b') || (typeGraphique== 'B') ) && !d3)
     {
         int delta= 4*polices[numPolice]->w, somme= 0;
 
@@ -366,6 +366,50 @@ int main(int argc, char **argv)
         }
 
     }
+
+    //----------------------------------- Tracer d'un histogramme
+
+    if( ( (typeGraphique== 'h') || (typeGraphique== 'H') ) && !d3)
+    {
+        //double si, co, angle;
+        int x0, y0, x1, y1, ltrait= 10;
+        //int r= dimension_graph/2 + 10;
+        int espace= polices[numPolice]->w;
+        int larg_h= largeur/nArgP - nArgP * espace - 2 * polices[numPolice]->w, marge= 30 * polices[numPolice]->w;
+
+        x0= polices[numPolice]->w;
+        x1= x0 + larg_h;
+        y0= hauteur - marge;
+
+        if(typeGraphique== 'h')
+        {
+            for(int j= 0; j < nArgP ;j++)
+            {
+                pourcentage[j]= (int)( (double)pourcentage[j]*(hauteur - marge - 5 * polices[numPolice]->h)/100);
+                //printf("\nrecalcul du pourcentage= %d marge %d 5*police %d hauteur %d large_h %d\n", pourcentage[j], marge, 5*polices[numPolice]->w, hauteur, larg_h);
+            }
+        }
+
+        for(int i=0; i<nArgP; i++)
+        {
+            //----------------------------------- Tracer une bare
+
+            gdImageFilledRectangle(im, x0, y0, x1, y0 - pourcentage[i], COULEURS[i]);
+
+            //printf("\nx0, y0= %d, %d - x1, y1 %d,%d - pourcentage[%d]= %d larg_h= %d\n", x0,y0,x1,y1,i, pourcentage[i], larg_h);
+
+            x0= x0 + larg_h + espace;
+            x1= x1 + larg_h + espace;
+        }
+    }
+
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+    //
+    //                                          TRACE DES DIFFERENTES FIGURES 3D
+    //
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
     if( ( (typeGraphique== 'c') || (typeGraphique== 'C') ) && d3)
     {
