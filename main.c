@@ -68,10 +68,13 @@ int main(int argc, char **argv)
     //
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    while((opt = getopt(argc, argv, "c:df:l:o:p:t:")) != -1) // pltf
+    while((opt = getopt(argc, argv, "ac:df:l:o:p:t:")) != -1) // pltf
     {
         switch(opt)
         {
+        case 'a':
+            longCouleur--;
+        break;
         case 'c':
             //printf("option: %c\n", opt);
             //printf("param: %s\n", optarg);
@@ -258,15 +261,6 @@ int main(int argc, char **argv)
             // VARIABLES DE DEBUG
             //double angleDeg= (tmp + pourcentage[i]/2);
 
-            //----------------------------------- Tracer des traits
-
-            x0= (int)(largeur/2 + dimension_graph/2 * co );
-            y0= (int)(hauteur/2 + dimension_graph/2 * si );
-            x1= (int)(largeur/2 + (dimension_graph/2+ltrait) * co );
-            y1= (int)(hauteur/2 + (dimension_graph/2+ltrait) * si );
-            //printf("\n x0, y0 = %d, %d et x1, y1= %d, %d ltrait= %d -- posx= %d posy=  %d r= %d -- co=  %lf si= %lf \n",x0, y0, x1, y1, ltrait, posx, posy, r, co, si);
-            //printf("VAR DEBUG: angle en degré = %lf\n", angleDeg);
-            gdImageLine(im, x0, y0, x1, y1, 0x00000000);
 
             //----------------------------------- Ecriture d'un label associé s'il existe
 
@@ -274,6 +268,15 @@ int main(int argc, char **argv)
             if( (cL!= NULL) && ( i < nArgL))
             {
                 int posx, posy, offset, off_y, off_y_s=0, off_y_s2=0;
+
+                //----------------------------------- Tracer des trait
+                x0= (int)(largeur/2 + dimension_graph/2 * co );
+                y0= (int)(hauteur/2 + dimension_graph/2 * si );
+                x1= (int)(largeur/2 + (dimension_graph/2+ltrait) * co );
+                y1= (int)(hauteur/2 + (dimension_graph/2+ltrait) * si );
+                //printf("\n x0, y0 = %d, %d et x1, y1= %d, %d ltrait= %d -- posx= %d posy=  %d r= %d -- co=  %lf si= %lf \n",x0, y0, x1, y1, ltrait, posx, posy, r, co, si);
+                //printf("VAR DEBUG: angle en degré = %lf\n", angleDeg);
+                gdImageLine(im, x0, y0, x1, y1, 0x00000000);
 
                 posx= (int)(largeur/2 + r * co );
                 posy= (int)(hauteur/2 + r * si );
