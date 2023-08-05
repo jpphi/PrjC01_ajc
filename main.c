@@ -26,20 +26,9 @@
 #include <gdfonts.h>
 #include <gdfontmb.h>
 #include <gdfontg.h>
-
-
 #include <math.h>
 
-//#define DEBUG 0
 #define NBPOLICE 5
-
-int HAUTEUR = 400;
-int LARGEUR = 400;
-int DIMENSION= 200;
-long unsigned int COULEUR_FOND= 0x00FFFFFF;
-
-long unsigned int COULEURS[]= {0x000000FF, 0x000080FF, 0x0000FF00, 0x0080FF80, 0x00FF0000, 0x00FF8000 ,0x00FFFF00, 0x00FF00FF, 0x0000FFFF, 0x00808080, 0x00FF8080};
-
 
 void afficheAide(void);
 
@@ -47,10 +36,17 @@ int main(int argc, char **argv)
 {
     char *cP, *cL, *cF, *cO, *mot,  **tabArgL, *chW; //*cT,
     char typeGraphique= 'C'; // Type de graphique par défaut
-    int opt, numPolice= 3;
+
+    long unsigned int COULEURS[]= {0x000000FF, 0x000080FF, 0x0000FF00, 0x0080FF80, 0x00FF0000, 0x00FF8000 ,0x00FFFF00, 0x00FF00FF, 0x0000FFFF, 0x00808080, 0x00FF8080};
+    long unsigned int COULEUR_FOND= 0x00FFFFFF;
+
     int longCouleur= sizeof(COULEURS)/sizeof(long unsigned int), nArgP= 1, nArgL= 1;
     int *pourcentage= NULL;
+    int hauteur = 400, largeur, dimension_graph= 200;
+    int opt, numPolice= 3;
+
     FILE *desc;
+
     gdImagePtr im;
     gdFontPtr polices[NBPOLICE]; // Plus facile si on souhaite passé le type de police= gdFontLarge;
 
@@ -77,8 +73,10 @@ int main(int argc, char **argv)
         switch(opt)
         {
         case 'c':
+            //printf("option: %c\n", opt);
+            //printf("param: %s\n", optarg);
+            //printf("Longueur: %d\n", strlen(optarg));
             numPolice= (optarg[0]-48) % NBPOLICE;
-            //printf("optarg %s, opttarg[0] %d, numPolice= %d\n",optarg, optarg[0], numPolice);
             break;
         case 'f':
             cF= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
@@ -94,31 +92,17 @@ int main(int argc, char **argv)
         case 'o':
             cO= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
             strcpy(cO, optarg);
-            //printf("option: %c\n", opt);
-            //printf("param: %s\n", optarg);
-            //printf("Longueur: %d\n", strlen(optarg));
-            sscanf(cO,"%d,%d,%d,%lx", &HAUTEUR, &LARGEUR, &DIMENSION, &COULEUR_FOND);
-            if(HAUTEUR < 200)HAUTEUR=200;
-            if(LARGEUR < 200)LARGEUR=200;
-            //if(DIMENSION < 200)DIMENSION=100;
-            //printf("\nH %d L %d R %d C %lx\n", HAUTEUR, LARGEUR, DIMENSION, COULEUR_FOND);
-            //if(COULEUR_FOND < 200)HAUTEUR=200;
+            sscanf(cO,"%d,%d,%d,%lx", &hauteur, &largeur, &dimension_graph, &COULEUR_FOND);
+            if(hauteur < 200)hauteur=200;
+            if(largeur < 200)largeur=200;
         break;
 
         case 'p':
-            //printf("option: %c\n", opt);
-            //printf("param: %s\n", optarg);
-            //printf("Longueur: %d\n", strlen(optarg));
             cP= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
             strcpy(cP, optarg);
         break;
 
         case 't': // De la forme t x avec x= c pour un camembert, h pour un histo, b pour un bar chart
-            //printf("option: %c\n", opt);
-            //printf("param: %s\n", optarg);
-            //printf("Longueur: %d\n", strlen(optarg));
-            //cT= (char *)malloc( (strlen(optarg) * sizeof(char)) + sizeof(char));
-            //strcpy(cT, optarg);
             typeGraphique= optarg[0];
         break;
 
@@ -244,8 +228,8 @@ int main(int argc, char **argv)
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     // Création de l'image de taille donée en paramètre
-    im = gdImageCreateTrueColor(LARGEUR, HAUTEUR);
-    gdImageFilledRectangle(im, 0, 0, LARGEUR-1, HAUTEUR-1, COULEUR_FOND);
+    im = gdImageCreateTrueColor(largeur, hauteur);
+    gdImageFilledRectangle(im, 0, 0, largeur-1, hauteur-1, COULEUR_FOND);
 
     //----------------------------------- Tracer du pie
 
@@ -255,24 +239,26 @@ int main(int argc, char **argv)
         {
             double si, co, angle;
             int x0, y0, x1, y1, ltrait= 10;
-            int r= DIMENSION/2 + 10;
+            int r= dimension_graph/2 + 10;
 
-            // Tracer d'une portion de camembert
-            gdImageFilledArc (im, LARGEUR/2, HAUTEUR/2, DIMENSION, DIMENSION, tmp, tmp+pourcentage[i], COULEURS[i%(longCouleur)], gdPie);
+            //----------------------------------- Tracer d'une portion de camembert
+
+            gdImageFilledArc (im, largeur/2, hauteur/2, dimension_graph, dimension_graph, tmp, tmp+pourcentage[i], COULEURS[i%(longCouleur)], gdPie);
             //printf("\ntmp= %d - tmp + pourcentage[%d]= %lu - i%(longCouleur-1)= %d - i= %d- longCouleur= %d", tmp,i, tmp + pourcentage[i], i%(longCouleur), i, longCouleur);
 
             angle= (double)(tmp + (double)pourcentage[i]/2)*M_PI/180;
+            si= sin(angle);
+            co= cos(angle);
 
             // VARIABLES DE DEBUG
             //double angleDeg= (tmp + pourcentage[i]/2);
 
-            si= sin(angle);
-            co= cos(angle);
+            //----------------------------------- Tracer des traits
 
-            x0= (int)(LARGEUR/2 + DIMENSION/2 * co );
-            y0= (int)(HAUTEUR/2 + DIMENSION/2 * si );
-            x1= (int)(LARGEUR/2 + (DIMENSION/2+ltrait) * co );
-            y1= (int)(HAUTEUR/2 + (DIMENSION/2+ltrait) * si );
+            x0= (int)(largeur/2 + dimension_graph/2 * co );
+            y0= (int)(hauteur/2 + dimension_graph/2 * si );
+            x1= (int)(largeur/2 + (dimension_graph/2+ltrait) * co );
+            y1= (int)(hauteur/2 + (dimension_graph/2+ltrait) * si );
             //printf("\n x0, y0 = %d, %d et x1, y1= %d, %d ltrait= %d -- posx= %d posy=  %d r= %d -- co=  %lf si= %lf \n",x0, y0, x1, y1, ltrait, posx, posy, r, co, si);
             //printf("VAR DEBUG: angle en degré = %lf\n", angleDeg);
             gdImageLine(im, x0, y0, x1, y1, 0x00000000);
@@ -284,9 +270,10 @@ int main(int argc, char **argv)
             {
                 int posx, posy, offset, off_y, off_y_s=0, off_y_s2=0;
 
-                posx= (int)(LARGEUR/2 + r * co );
-                posy= (int)(HAUTEUR/2 + r * si );
+                posx= (int)(largeur/2 + r * co );
+                posy= (int)(hauteur/2 + r * si );
 
+                // Attention, sens inverse du sens trigo! Entre 90 et 270, écriture avant le camembert
                 if( (angle > M_PI/2) && (angle < 3*M_PI/2) )
                 {
                     offset= -(polices[numPolice]->w) * strlen(tabArgL[i]) - polices[numPolice]->w;
@@ -299,18 +286,22 @@ int main(int argc, char **argv)
                     off_y= (int)(-(polices[numPolice]->w) * 1.0 * co);
                     //off_y_s= (int)((polices[numPolice]->w) * si * 1.5);
                 }
+
+                // Pour les angles prés de 90 et 270, on décale l'écriture
                 if( (angle > M_PI/3) && (angle < 2*M_PI/3) || (angle > 4*M_PI/3) && (angle < 5*M_PI/3) )
                 {
                     off_y_s= (int)((polices[numPolice]->w) * si * 1.5);
                     off_y+= off_y_s;
                 }
 
+                // Pour les angles trés prés de 90 et 270, on décale l'écriture d'un facteur supplémentaire
                 if( (angle > 9*M_PI/20) && (angle < 11*M_PI/20) || (angle > 29*M_PI/20) && (angle < 31*M_PI/20) )
                 {
                     off_y_s2= (int)((polices[numPolice]->w) * si * 1.5);
                     off_y+= off_y_s2;
                 }
 
+                // Ecriture
                 gdImageString(im, polices[numPolice], posx + offset, posy + off_y,tabArgL[i], 0x00000000);
                 //printf("\n Dans l affichage chaine: %s - offset= %d\n", tabArgL[i], offset);
             }
@@ -323,25 +314,25 @@ int main(int argc, char **argv)
 
     if( (typeGraphique== 'b') || (typeGraphique== 'B') )
     {
-        int delta= 4*polices[numPolice]->w;
+        int delta= 4*polices[numPolice]->w, somme= 0;
 
         if(typeGraphique== 'b')
         {
             for(int j= 0; j < nArgP ;j++)
             {
-                pourcentage[j]= (int)( (double)pourcentage[j]*(HAUTEUR - 2*delta)/100);
-                printf("\nrecalcul du pourcentage= %d\n", pourcentage[j]);
+                pourcentage[j]= (int)( (double)pourcentage[j]*(hauteur - 2*delta)/100);
+                //printf("\nrecalcul du pourcentage= %d\n", pourcentage[j]);
             }
         }
 
-        for(int i=0, tmp= HAUTEUR - delta; i<nArgP; i++)
+        for(int i=0, tmp= hauteur - delta; i<nArgP; i++)
         {
             int base;
 
             base= tmp - pourcentage[i] ;
 
             // Tracer une part
-            gdImageFilledRectangle(im, LARGEUR/2 - DIMENSION/2, tmp ,LARGEUR/2 + DIMENSION/2, base, COULEURS[i%(longCouleur)]);
+            gdImageFilledRectangle(im, largeur/2 - dimension_graph/2, tmp ,largeur/2 + dimension_graph/2, base, COULEURS[i%(longCouleur)]);
 
             //----------------------------------- Ecriture d'un label associé s'il existe
 
@@ -349,7 +340,7 @@ int main(int argc, char **argv)
             {
                 int posx, posy;
 
-                posx= LARGEUR/2 + DIMENSION/2 + polices[numPolice]->w;
+                posx= largeur/2 + dimension_graph/2 + polices[numPolice]->w;
                 posy= base + pourcentage[i] / 2;
 
                 gdImageString(im, polices[numPolice], posx, posy, tabArgL[i], 0x00000000);
@@ -357,6 +348,15 @@ int main(int argc, char **argv)
 
             tmp-= pourcentage[i];
         }
+
+        // Dessiner une échelle
+        for(int j= 0; j < nArgP; j++)somme+= pourcentage[j];
+        for(int pas= hauteur - delta ; pas >= delta ; pas-= (hauteur- 2*delta)/10)
+        {
+            printf("\nsomme= %d, pas= %d\n", somme, pas);
+            gdImageLine(im, largeur/2 - dimension_graph/2 - 4*polices[numPolice]->w, pas, largeur/2 - dimension_graph/2 - polices[numPolice]->w, pas, 0x00000000);
+        }
+
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
