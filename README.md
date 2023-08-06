@@ -48,6 +48,10 @@ Bar chart 2D:
 ./pie -p 10,20,30,25,15 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 25%','Label: 15%' -f barChartb.png -o 800,800,400,0x80A0B0C0 -t b  
 ./pie -p 70,20,30,40,50,100,50,60 -l 'Label: 70','Label: 20','Label: 30','Label: 40','Label: 50','Label: 100','Label: 50','Label: 60' -f barChartB.png -o 800,800,400,0x80A0B0C0 -t B  
   
+Histogramme 2D (**en cours de dév**)  
+./pie -p 70,20,30,40,50,100,50,60 -l 'Label: 70','Label: 20','Label: 30','Label: 40','Label: 50','Label: 100','Label: 50','Label: 60' -f histoB.png -o 800,800,400,0x80A0B0C0 -t H  
+./pie -p 10,20,30,25,15 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 25%','Label: 15%' -f histob.png -o 800,800,400,0x80A0B0C0 -t h  
+  
 ## Problèmes et améliorations  
 - La ligne de commande n'est pas vérifiée ni filtrée. Attention de ne pas entrer n'importe quoi ! :)  
 - La version incluant les histogrammes ne gère pas les label. **Encore en phase de test**.  
