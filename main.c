@@ -3,15 +3,18 @@
  *
  * Ligne de commande pour test:
  * ./pie -p 10,20,15,15,30 -l 'Label: 10%','Label: 20%','Label: 15%','Label: 15%','Label: 30%' -f CamPartiel.png -o 800,800,400,0x80A0B0C0
+ *
  * Option c
  * ./pie -p 5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2,5,3,2, -l 'Label 1: 5 %','Label 1: 3 %','Label 1: 2 %','Label 2: 5 %','Label 2: 3 %','Label 2: 2 %','Label 3: 5 %','Label 3: 3 %','Label 3: 2 %','Label 4: 5 %','Label 4: 3 %','Label 4: 2 %','Label 5: 5 %','Label 5: 3 %','Label 5: 2 %','Label 6: 5 %','Label 6: 3 %','Label 6: 2 %','Label 7: 5 %','Label 7: 3 %','Label 7: 2 %','Label 8: 5 %','Label 8: 3 %','Label 8: 2 %','Label 9: 5 %','Label 9: 3 %','Label 9: 2 %','Label 10: 5 %','Label 10: 3 %','Label 10: 2 %' -f pbArrondi.png -o 800,800,400,0x80A0B0C0 -t c
  * Option C
  * ./pie -p 11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9 -l 'Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9' -f Cam36C.png -o 800,800,400,0x80A0B0C0 -t C
+ *
  * Option B
  * ./pie -p 70,20,30,40,50,100,50,60 -l 'Label: 70','Label: 20','Label: 30','Label: 40','Label: 50','Label: 100','Label: 50','Label: 60' -f barChartB.png -o 800,800,400,0x80A0B0C0 -t B
  * Option b
  * ./pie -p 10,20,30,25,15 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 25%','Label: 15%' -f barChartb.png -o 800,800,400,0x80A0B0C0 -t b
  *
+ * Divers
  * ./pie -p 10,20,30,40,50,100,50,60 -l 'Label: 10%','Label: 20%','Label: 30%','Label: 40%','Label: 50%','Label: 100%','Label: 50%','Label: 60%' -f toto1.png -o 800,800,400,0x80A0B0C0
  *
  * ./pie -p 11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9,11,9 -l 'Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9','Label: 11','Label: 9' -f toto.png -o 800,800,400,0x80A0B0C0 -t C
@@ -361,7 +364,7 @@ int main(int argc, char **argv)
         for(int j= 0; j < nArgP; j++)somme+= pourcentage[j];
         for(int pas= hauteur - delta ; pas >= delta ; pas-= (hauteur- 2*delta)/10)
         {
-            printf("\nsomme= %d, pas= %d\n", somme, pas);
+            //printf("\nsomme= %d, pas= %d\n", somme, pas);
             gdImageLine(im, largeur/2 - dimension_graph/2 - 4*polices[numPolice]->w, pas, largeur/2 - dimension_graph/2 - polices[numPolice]->w, pas, 0x00000000);
         }
 
@@ -371,9 +374,7 @@ int main(int argc, char **argv)
 
     if( ( (typeGraphique== 'h') || (typeGraphique== 'H') ) && !d3)
     {
-        //double si, co, angle;
-        int x0, y0, x1, y1, ltrait= 10;
-        //int r= dimension_graph/2 + 10;
+        int x0, y0, x1, y1;
         int espace= polices[numPolice]->w;
         int larg_h= largeur/nArgP - nArgP * espace - 2 * polices[numPolice]->w, marge= 30 * polices[numPolice]->w;
 
@@ -413,9 +414,6 @@ int main(int argc, char **argv)
 
     if( ( (typeGraphique== 'c') || (typeGraphique== 'C') ) && d3)
     {
-        double si, co, angle;
-        int x0, y0, x1, y1, ltrait= 10;
-        int r= dimension_graph/2 + 10;
         int epaisseur= hauteur/12;
         unsigned int couleur;
 
