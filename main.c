@@ -379,9 +379,9 @@ int main(int argc, char **argv)
 
     if( ( (typeGraphique== 'h') || (typeGraphique== 'H') ) && !d3)
     {
-        int x0, y0, x1, y1;
+        int x0, y0, x1, y1, somme;
         int espace= polices[numPolice]->w;
-        int larg_h= largeur/nArgP - nArgP * espace - 2 * polices[numPolice]->w, marge= 30 * polices[numPolice]->w;
+        int larg_h= (largeur- (nArgP+1) * espace)/nArgP /*- 2 * polices[numPolice]->w*/, marge= 30 * polices[numPolice]->w;
 
         x0= polices[numPolice]->w;
         x1= x0 + larg_h;
@@ -402,11 +402,20 @@ int main(int argc, char **argv)
 
             gdImageFilledRectangle(im, x0, y0, x1, y0 - pourcentage[i], COULEURS[i]);
 
-            //printf("\nx0, y0= %d, %d - x1, y1 %d,%d - pourcentage[%d]= %d larg_h= %d\n", x0,y0,x1,y1,i, pourcentage[i], larg_h);
+            //printf("\nx0, y0= %d, %d - x1, y1 %d,%d - pourcentage[%d]= %d larg_h= %d espace== %d\n", x0,y0,x1,y0 - pourcentage[i],i, pourcentage[i], larg_h, espace);
 
             x0= x0 + larg_h + espace;
             x1= x1 + larg_h + espace;
         }
+
+        // Dessiner une échelle
+        for(int j= 0; j < nArgP; j++)somme+= pourcentage[j];
+        for(int pas= hauteur - marge, margehaute= 5 * polices[numPolice]->h ; pas >= margehaute ; pas-= (hauteur- marge - margehaute)/10)
+        {
+            //printf("\nsomme= %d, pas= %d\n", somme, pas);
+            gdImageLine(im, 0, pas, largeur-1, pas, 0x00000000);
+        }
+
     }
 
 
